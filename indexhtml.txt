@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Terminal Simulator</title>
+    <style>
+        /* Style the body and page */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Create the terminal container */
+        .terminal {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: #00FF00;  /* Green text */
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+            background-color: #000;
+            font-size: 20px;
+            line-height: 1.5;
+        }
+
+        /* Output area */
+        .output {
+            white-space: pre-wrap;  /* Allows preserving line breaks */
+            word-wrap: break-word;
+        }
+
+        /* Cursor styling */
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: #00FF00;
+            animation: blink 1s step-end infinite;
+        }
+
+        /* Cursor blinking effect */
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Retro CRT effect */
+        .terminal {
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+            background-image: linear-gradient(rgba(0, 255, 0, 0.1) 0px, rgba(0, 255, 0, 0.3) 0.2em);
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="output" id="output"></div>
+        <div class="cursor" id="cursor">|</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const outputElement = document.getElementById("output");
+            const cursorElement = document.getElementById("cursor");
+            const codeSequence = [
+                "Initializing system...\n",
+                "Welcome to your terminal.\n",
+                "Type 'help' for a list of commands.\n",
+                ">_ "
+            ];
+            
+            let currentIndex = 0;
+            let currentCharIndex = 0;
+            let userTyping = false;
+
+            // Function to display the output
+            function typeCharacter() {
+                if (currentCharIndex < codeSequence[currentIndex].length) {
+                    outputElement.textContent += codeSequence[currentIndex][currentCharIndex];
+                    currentCharIndex++;
+                    setTimeout(typeCharacter, 50);  // Adjust speed of typing
+                } else {
+                    currentIndex = (currentIndex + 1) % codeSequence.length;  // Loop through the sequence
+                    currentCharIndex = 0;
+                    userTyping = false;  // Reset typing state after sequence
+                }
+            }
+
+            // Function to handle key press
+            function handleKeyPress(event) {
+                if (!userTyping) {
+                    userTyping = true;  // User starts typing
+                    typeCharacter();    // Start typing the next sequence
+                }
+
+                // Prevent default behavior of the key press (not affecting output)
+                event.preventDefault();
+            }
+
+            // Start typing the initial sequence
+            setTimeout(typeCharacter, 500);
+
+            // Capture user input (keydown event)
+            window.addEventListener("keydown", handleKeyPress);
+        });
+    </script>
+</body>
+</html>
